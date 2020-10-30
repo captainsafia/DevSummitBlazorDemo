@@ -1,16 +1,29 @@
 @page "/counter"
 
+@inject IJSRuntime JSRuntime
+
 <h1>Counter</h1>
 
 <p>Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<button class="btn btn-primary" @onclick="ShowAlert">Alert me</button>
+
 @code {
     private int currentCount = 0;
+
+    private IJSObjectReference module;
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+    private async Task ShowAlert()
+    {
+        module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./js/show-alert.js");
+
+        await module.InvokeAsync<string>("showAlert", "This is our alert message.");
     }
 }

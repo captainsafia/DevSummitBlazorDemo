@@ -1,0 +1,42 @@
+@page "/fetchdata-virtualized"
+
+@inject HttpClient Http
+
+<h1>Weather forecast (virtualized)</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <Virtualize Items="@forecasts" Context="forecast">
+        <p>
+            On @forecast.Date.ToShortDateString() it was
+            @forecast.TemperatureC Celsius and
+            @forecast.TemperatureF Fahrenheit
+            and @forecast.Summary.
+        </p>
+    </Virtualize>
+}
+
+@code {
+    private WeatherForecast[] forecasts;
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather-big.json");
+    }
+
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}
