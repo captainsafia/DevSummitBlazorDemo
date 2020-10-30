@@ -1,0 +1,44 @@
+﻿@page "/fetchdata"
+
+@using BlazorTable
+
+@inject HttpClient Http
+
+
+<h1 class="weather">Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <Table TableItem="WeatherForecast" Items="forecasts" PageSize="15">
+        <Column TableItem="WeatherForecast" Title="Date" Field="@(x => x.Date)" Sortable="true" Filterable="true" Width="10%" />
+        <Column TableItem="WeatherForecast" Title="Temp. (C)" Field="@(x => x.TemperatureC)" Sortable="true" Width="20%" />
+        <Column TableItem="WeatherForecast" Title="Temp. (F)" Field="@(x => x.TemperatureF)" Sortable="true" Width="20%" />
+        <Column TableItem="WeatherForecast" Title="Summary" Field="@(x => x.Summary)" Sortable="true" Width="20%" />
+    </Table>
+}
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+    }
+
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}
